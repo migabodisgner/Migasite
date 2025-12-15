@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="/style.css">
+    <title>Login</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+
 <div class="container">
-<h2>Login</h2>
+    <h2>Login</h2>
 
-<form action="/login" method="POST">
-<label>Email</label>
-<input type="email" name="email" required>
+    <form action="/login" method="POST">
+        <label>Email</label>
+        <input type="email" name="email" required>
 
-<label>Password</label>
-<input type="password" name="password" required>
+        <label>Password</label>
+        <input type="password" name="password" required>
 
-<button type="submit">Login</button>
+        <button type="submit">Login</button>
+    </form>
 
-</form>
-
-<p class="link">Don't have an account? <a href="/register">Create Account</a></p>
+    <p class="link">
+        Don't have an account? <a href="/register">Create Account</a>
+    </p>
 </div>
+
 </body>
 </html>

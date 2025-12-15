@@ -1,0 +1,19 @@
+<h2>Your Cart</h2>
+
+<table>
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Status</th>
+</tr>
+
+<% carts.forEach(c => { %>
+<tr>
+<td><%= c.productName %></td>
+<td><%= c.price %> RWF</td>
+<td><%= c.status %></td>
+</tr>
+<% }) %>
+</table>
+
+<a href="/home">← Back</a>

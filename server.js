@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
 const User = require("./models/User");
-const session = require("express-session"); // REQUIRED
+const session = require("express-session");
 
 const app = express();
 
@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-// REQUIRED for login → dashboard connection
+// Session setup
 app.use(
     session({
         secret: "secretkey",
@@ -42,9 +42,30 @@ app.get("/register", (req, res) => {
     res.render("register");
 });
 
-// Home Page
+// Home Page (USER)
 app.get("/home", (req, res) => {
-    res.render("home");
+    if (!req.session.user) {
+        return res.redirect("/");
+    }
+    res.render("home", { user: req.session.user });
+});
+
+// Cart Page (USER)
+app.get("/cart", (req, res) => {
+    if (!req.session.user) {
+        return res.redirect("/");
+    }
+    res.render("cart", { user: req.session.user });
+});
+
+// Logout (USER & ADMIN)
+app.get("/logout", (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.send("Error while logging out");
+        }
+        res.redirect("/");
+    });
 });
 
 // Register - Save User
@@ -69,35 +90,38 @@ app.post("/login", async (req, res) => {
         return res.send("<h2>Wrong Email or Password <a href='/'>Try Again</a></h2>");
     }
 
+    // ADMIN
     if (user.role === "admin") {
-
-        // REQUIRED: store admin info for dashboard
         req.session.admin = {
             id: user._id,
             fullname: user.fullname,
             email: user.email,
             role: user.role
         };
-
         return res.redirect("/dashboard");
     }
 
+    // USER
     if (user.role === "user") {
-        return res.sendFile(path.join(__dirname, "views", "home.html"));
+        req.session.user = {
+            id: user._id,
+            fullname: user.fullname,
+            email: user.email,
+            role: user.role
+        };
+        return res.redirect("/home");
     }
 });
 
-// Admin Dashboard Page (CONNECTED TO LOGIN)
+// Admin Dashboard Page (corrected)
 app.get("/dashboard", async (req, res) => {
-
-    // block access if not logged in
     if (!req.session.admin) {
         return res.redirect("/");
     }
 
     const admin = req.session.admin;
     const users = await User.find();
-    const adminsCount = await User.countDocuments({ role: "admin" });
+    const adminsCount = await User.countDocuments({ role: "admin" }); // fixed
 
     res.render("dashboard", {
         admin,
